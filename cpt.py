@@ -97,7 +97,7 @@ def cw_resonance(t, P, I1, I2, d1_max, n=100, fs=first_step, ms=max_step):
     return (d1_lin, p33_lin)
 
 
-def ramsey_resonance(tpulse, tfree, tmeas, P, I1, I2, d1_max, n=200, fs=first_step, ms=max_step):
+def ramsey_resonance(tpulse, tfree, tmeas, P, I1, I2, d1_max, n=201, fs=first_step, ms=max_step):
     w1=rbc.w1(I1)
     w2=rbc.w2(I2)
     d2 = 0
