@@ -6,6 +6,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+from scipy.integrate import odeint
 import rb_constants as rbc
 
 g31 = rbc.g31
@@ -49,8 +50,7 @@ def cw(t, P, w1, w2, d1, d2, fs=first_step, ms=max_step):
     tspan=(0,t)
     on=(w1,w2)
     detuning=(d1,d2)
-    return solve_ivp(dP_dt, tspan, P, args=on+detuning, first_step=fs, max_step=ms)
-
+    return solve_ivp(dP_dt, tspan, P, args=on+detuning, t_eval=[t], first_step=fs, max_step=ms)
 
 def free(t, P, d1, d2, fs=first_step, ms=max_step):
     if (fs > t/3):
@@ -58,7 +58,7 @@ def free(t, P, d1, d2, fs=first_step, ms=max_step):
     tspan=(0,t)
     off=(0,0)
     detuning=(d1,d2)
-    return solve_ivp(dP_dt, tspan, P, args=off+detuning, first_step=fs, max_step=ms)
+    return solve_ivp(dP_dt, tspan, P, args=off+detuning, t_eval=[t], first_step=fs, max_step=ms)
 
 
 def ramsey(tpulse, tfree, tmeas, P, w1, w2, d1, d2, fs=first_step, ms=max_step):
@@ -86,16 +86,21 @@ def cw_resonance(t, P, I1, I2, d1_max, n=100, fs=first_step, ms=max_step):
     w2=rbc.w2(I2)
     d2 = 0
     d1_lin = np.linspace(-1*d1_max, d1_max, num=n)
-    p33_lin=np.ones(n, dtype='complex')
+    ptot_lin=np.ones(n, dtype='complex')
+    #p33_lin=np.ones(n, dtype='complex')
     for i in range(n):
         d1 = d1_lin[i]
         result = cw(t, P, w1, w2, d1, d2, fs=fs, ms=ms)
         p11f = result.y[0,-1]
         p22f = result.y[1,-1]
+        ptotf = p11f+p22f
+        ptot_lin[i] = ptotf
+    return (d1_lin, ptot_lin)
+    '''
         p33f = 1-p11f-p22f
         p33_lin[i] = p33f
     return (d1_lin, p33_lin)
-
+    '''
 
 def ramsey_resonance(tpulse, tfree, tmeas, P, I1, I2, d1_max, n=201, fs=first_step, ms=max_step):
     w1=rbc.w1(I1)
